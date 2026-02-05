@@ -1,0 +1,253 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Von Neumann Architecture | Notes + Interactives</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Von Neumann Architecture</h1>
+      <p class="subtitle">Colorful notes, interactives, and quick checks (CPU, registers, buses, memory ops, fetch-decode-execute).</p>
+      <div class="hero-actions">
+        <a class="btn" href="#learn">Start Learning</a>
+        <a class="btn btn-ghost" href="#quiz">Take Quiz</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="topnav">
+    <a href="#learn">Learn</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#cpu">CPU + Registers</a>
+    <a href="#buses">Buses</a>
+    <a href="#memory">Memory Read/Write</a>
+    <a href="#cycle">Fetch-Decode-Execute</a>
+    <a href="#quiz">Quiz</a>
+    <button id="toggleTheme" class="chip" type="button" aria-label="Toggle theme">Theme</button>
+  </nav>
+
+  <main class="wrap" id="learn">
+    <section class="grid2">
+      <article class="card accent-blue">
+        <h2>Big Idea</h2>
+        <p><strong>Stored program concept:</strong> data and instructions are stored in the <strong>same memory</strong>.</p>
+        <ul class="bullets">
+          <li>CPU fetches instructions from memory like data</li>
+          <li>Same system connects CPU, memory, and input/output</li>
+          <li>This also creates the von Neumann bottleneck</li>
+        </ul>
+      </article>
+
+      <article class="card accent-purple">
+        <h2>What You Should Be Able To Do</h2>
+        <ul class="checks">
+          <li><input type="checkbox" /> Name the main parts (CPU, memory, I/O)</li>
+          <li><input type="checkbox" /> Explain address/data/control buses</li>
+          <li><input type="checkbox" /> Explain read vs write using MAR/MDR</li>
+          <li><input type="checkbox" /> Trace the fetch-decode-execute cycle</li>
+          <li><input type="checkbox" /> Explain the bottleneck in 1 sentence</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="architecture" class="card accent-teal">
+      <div class="card-head">
+        <h2>Architecture Overview</h2>
+        <p class="muted">Click a box to highlight it.</p>
+      </div>
+
+      <div class="diagram">
+        <button class="node" data-node="cpu" type="button">CPU<br><span class="small">ALU + CU</span></button>
+        <div class="bus-lines">
+          <div class="bus address">Address bus</div>
+          <div class="bus data">Data bus</div>
+          <div class="bus control">Control bus</div>
+        </div>
+        <button class="node" data-node="mem" type="button">Memory<br><span class="small">Addresses + Contents</span></button>
+        <button class="node" data-node="io" type="button">Input/Output<br><span class="small">Keyboard, Screen, etc</span></button>
+      </div>
+
+      <div class="callout" id="archExplain">
+        Select a part above to see what it does.
+      </div>
+    </section>
+
+    <section id="cpu" class="grid2">
+      <article class="card accent-orange">
+        <h2>CPU: ALU + Control Unit</h2>
+        <p><strong>ALU</strong> does arithmetic and logic (add, subtract, compare).</p>
+        <p><strong>Control Unit</strong> controls memory and I/O, decodes instructions, sends control signals.</p>
+        <div class="mini">
+          <span class="tag">Tip</span>
+          <span>ALU = calculates, CU = coordinates.</span>
+        </div>
+      </article>
+
+      <article class="card accent-pink">
+        <h2>Registers (Fast Storage)</h2>
+        <p class="muted">Tap a register to see its job.</p>
+        <div class="reg-grid" id="regGrid">
+          <button class="reg" data-reg="PC" type="button">PC</button>
+          <button class="reg" data-reg="MAR" type="button">MAR</button>
+          <button class="reg" data-reg="MDR" type="button">MDR</button>
+          <button class="reg" data-reg="CIR" type="button">CIR</button>
+          <button class="reg" data-reg="ACC" type="button">ACC</button>
+        </div>
+        <div class="callout" id="regExplain">Pick a register.</div>
+      </article>
+    </section>
+
+    <section id="buses" class="card accent-lime">
+      <h2>Buses (How Components Communicate)</h2>
+      <div class="table">
+        <div class="row head">
+          <div>Bus</div><div>What it carries</div><div>Direction</div>
+        </div>
+        <div class="row">
+          <div><strong>Address</strong></div>
+          <div>Memory location (where to read/write)</div>
+          <div>CPU → Memory/I-O</div>
+        </div>
+        <div class="row">
+          <div><strong>Data</strong></div>
+          <div>Actual data or instruction bits</div>
+          <div>Both ways</div>
+        </div>
+        <div class="row">
+          <div><strong>Control</strong></div>
+          <div>Signals like READ and WRITE</div>
+          <div>CPU → Memory/I-O</div>
+        </div>
+      </div>
+
+      <div class="mini">
+        <span class="tag">Common mistake</span>
+        <span>Only the data bus is bidirectional.</span>
+      </div>
+    </section>
+
+    <section id="memory" class="grid2">
+      <article class="card accent-indigo">
+        <h2>Memory Read</h2>
+        <ol class="steps">
+          <li>Put the address into <strong>MAR</strong></li>
+          <li>Send a <strong>READ</strong> signal on the control bus</li>
+          <li>Memory sends contents back into <strong>MDR</strong></li>
+          <li>CPU uses the data from MDR</li>
+        </ol>
+        <button class="btn" id="demoRead" type="button">Demo Read</button>
+        <pre class="console" id="readOut">Waiting…</pre>
+      </article>
+
+      <article class="card accent-red">
+        <h2>Memory Write</h2>
+        <ol class="steps">
+          <li>Put the data into <strong>MDR</strong></li>
+          <li>Put the address into <strong>MAR</strong></li>
+          <li>Send a <strong>WRITE</strong> signal on the control bus</li>
+          <li>Memory stores the data at that address</li>
+        </ol>
+        <button class="btn" id="demoWrite" type="button">Demo Write</button>
+        <pre class="console" id="writeOut">Waiting…</pre>
+      </article>
+    </section>
+
+    <section id="cycle" class="card accent-cyan">
+      <div class="card-head">
+        <h2>Fetch-Decode-Execute Simulator</h2>
+        <p class="muted">Click step-by-step to see the register moves.</p>
+      </div>
+
+      <div class="sim">
+        <div class="sim-left">
+          <div class="mem">
+            <h3>Memory (sample)</h3>
+            <div class="mem-row"><span class="addr">2000</span><span class="val">A1 22</span><span class="note">MOV AX, 22h</span></div>
+            <div class="mem-row"><span class="addr">2002</span><span class="val">33 15</span><span class="note">SUB AX, 15h</span></div>
+            <div class="mem-row"><span class="addr">2004</span><span class="val">F4</span><span class="note">HLT</span></div>
+          </div>
+
+          <div class="regs">
+            <h3>Registers</h3>
+            <div class="kv"><span>PC</span><span id="pcVal">2000</span></div>
+            <div class="kv"><span>MAR</span><span id="marVal">----</span></div>
+            <div class="kv"><span>MDR</span><span id="mdrVal">----</span></div>
+            <div class="kv"><span>CIR</span><span id="cirVal">----</span></div>
+            <div class="kv"><span>ACC</span><span id="accVal">0</span></div>
+          </div>
+        </div>
+
+        <div class="sim-right">
+          <div class="sim-controls">
+            <button class="btn" id="stepBtn" type="button">Next Step</button>
+            <button class="btn btn-ghost" id="resetBtn" type="button">Reset</button>
+          </div>
+          <div class="callout" id="simExplain">Press "Next Step" to begin.</div>
+
+          <div class="progress">
+            <div class="pill" id="pFetch">Fetch</div>
+            <div class="pill" id="pDecode">Decode</div>
+            <div class="pill" id="pExecute">Execute</div>
+          </div>
+
+          <div class="mini">
+            <span class="tag">Remember</span>
+            <span>Fetch is PC → MAR → MDR → CIR, then PC increments.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="card accent-gold">
+      <h2>Quick Quiz (Self Check)</h2>
+      <p class="muted">Answer and press "Check".</p>
+
+      <form id="quizForm" class="quiz">
+        <div class="q">
+          <p><strong>1)</strong> Which bus is bidirectional?</p>
+          <label><input type="radio" name="q1" value="a" /> Address bus</label>
+          <label><input type="radio" name="q1" value="b" /> Data bus</label>
+          <label><input type="radio" name="q1" value="c" /> Control bus</label>
+        </div>
+
+        <div class="q">
+          <p><strong>2)</strong> Which register stores the address being accessed?</p>
+          <label><input type="radio" name="q2" value="a" /> MDR</label>
+          <label><input type="radio" name="q2" value="b" /> MAR</label>
+          <label><input type="radio" name="q2" value="c" /> ACC</label>
+        </div>
+
+        <div class="q">
+          <p><strong>3)</strong> Put this in the correct fetch order:</p>
+          <div class="drag-area" id="dragArea" aria-label="Drag to reorder">
+            <div class="chip drag" draggable="true">PC → MAR</div>
+            <div class="chip drag" draggable="true">Memory → MDR</div>
+            <div class="chip drag" draggable="true">MDR → CIR</div>
+            <div class="chip drag" draggable="true">PC increments</div>
+          </div>
+          <p class="muted small">Drag items to reorder, top to bottom.</p>
+        </div>
+
+        <div class="quiz-actions">
+          <button class="btn" type="submit">Check</button>
+          <button class="btn btn-ghost" type="button" id="quizReset">Reset Quiz</button>
+        </div>
+      </form>
+
+      <div class="callout" id="quizResult">Score will show here.</div>
+    </section>
+
+    <footer class="foot">
+      <p class="muted">
+        Built for offline use. You can submit this as evidence of understanding.
+      </p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
